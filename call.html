@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CRUD Application</title>
+  </head>
+  <body>
+    <h1>CRUD Application</h1>
+
+    <form id="itemForm">
+      <label for="studentId">Student ID:</label>
+      <input type="text" id="studentId" required>
+      <br>
+      <label for="studentName">Student Name:</label>
+      <input type="text" id="studentName" required>
+      <br>
+      <label for="program">Program:</label>
+      <input type="text" id="program" required>
+      <br>
+      <button type="submit" >Add Item</button>
+      <button type="button" onclick="editItem();" >Edit Item</button>
+      <button type="button" onclick="deleteItem();" >Delete Item</button>
+    </form>
+
+    <table id="itemTable" border="1">
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Student Name</th>
+          <th>Program</th>
+        </tr>
+      </thead>
+      <tbody id="itemTableBody">
+      </tbody>
+    </table>
+
+    <script>
+      const apiUrl = 'http://localhost:3000/api/student';
+      
+
+      // Function to fetch all items and populate the table
+      function fetchItems() {
+        fetch(apiUrl)
+          .then(response => response.json())
+          .then(data => {
+            // Clear the table body
+            const tableBody = document.getElementById('itemTableBody');
+            tableBody.innerHTML = '';
+
+            // Populate the table with data
+            data.forEach(item => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${item.studentID}</td>
+                <td>${item.name}</td>
+                <td>${item.program}</td>
+              `;
+              tableBody.appendChild(row);
+            });
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+      // Function to add a new item
+      function addItem(event) {
+        event.preventDefault();
+
+        const studentId = document.getElementById('studentId').value;
+        const studentName = document.getElementById('studentName').value;
+        const program = document.getElementById('program').value;
+
+        const newItem = {
+          studentID : studentId,
+          name : studentName,
+          program: program
+        };
+
+        fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newItem)
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Item added:', data);
+
+            // Clear the form
+            document.getElementById('itemForm').reset();
+
+            // Fetch items again to update the table
+            fetchItems();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+      // Add event listener to the form submit event
+      document.getElementById('itemForm').addEventListener('submit', addItem);
+
+
+      //Edit Items
+      function editItem() {
+
+        const studentId = document.getElementById('studentId').value;
+        const studentName = document.getElementById('studentName').value;
+        const program = document.getElementById('program').value;
+
+        const newItem = {
+          studentID : studentId,
+          name : studentName,
+          program: program
+        };
+
+        fetch(apiUrl + "/" + studentId, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newItem)
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Item added:', data);
+
+            // Clear the form
+            document.getElementById('itemForm').reset();
+
+            // Fetch items again to update the table
+            fetchItems();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+      //Delete Items
+      function deleteItem() {
+
+      const studentId = document.getElementById('studentId').value;
+      const studentName = document.getElementById('studentName').value;
+      const program = document.getElementById('program').value;
+
+      const newItem = {
+        studentID : studentId,
+        name : studentName,
+        program: program
+      };
+
+      fetch(apiUrl + "/" + studentId, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        // body: JSON.stringify(newItem)
+      })
+        .then(response => response.json())
+        .then(data => {
+          // console.log('Item added:', data);
+
+          // Clear the form
+          document.getElementById('itemForm').reset();
+
+          // Fetch items again to update the table
+          fetchItems();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      }
+
+      // Fetch items when the page loads
+      fetchItems();
+    </script>
+  </body>
+</html>

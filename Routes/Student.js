@@ -64,7 +64,7 @@ const writeToFile = () => {
 
 // Get all items
 route.get(Endpoint, (req, res) => {
-  studentsJSON().then((data) => {res.json(data)});
+  studentsJSON().then((data) => {res.json(data); console.log(data);});
 });
 
 // Create a new item
